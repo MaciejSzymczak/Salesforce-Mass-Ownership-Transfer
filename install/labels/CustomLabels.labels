@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?><CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>InactiveOwnerId</fullName>
+        <categories>MassUpdate</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>InactiveOwnerId</shortDescription>
+        <value>0052X000008H6G7</value>
+    </labels>
+    <labels>
+        <fullName>InactiveOwnerName</fullName>
+        <categories>MassUpdates</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>InactiveOwnerName</shortDescription>
+        <value>Transfer to: Parked EU Accounts</value>
+    </labels>
+</CustomLabels>

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+  <types>
+    <members>massUpdateClass</members>
+    <members>massUpdateClassTest</members>
+    <name>ApexClass</name>
+  </types>
+  <types>
+    <members>YourCompany_Admin</members>
+    <name>CustomApplication</name>
+  </types>
+  <types>
+    <members>CustomLabels</members>
+    <name>CustomLabels</name>
+  </types>
+  <types>
+    <members>MassUpdate__c</members>
+    <name>CustomObject</name>
+  </types>
+  <types>
+    <members>Mass_Update</members>
+    <name>CustomTab</name>
+  </types>
+  <types>
+    <members>lwcLookupComponent</members>
+    <members>massUpdate</members>
+    <name>LightningComponentBundle</name>
+  </types>
+  <types>
+    <members>Admin</members>
+    <name>Profile</name>
+  </types>
+  <version>56.0</version>
+</Package>

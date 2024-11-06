@@ -1,0 +1,149 @@
+<!-- sldsValidatorIgnore -->
+<template>
+
+    <lightning-card title = "Ownership transfer" icon-name = "standard:custom_notification">  
+        <div class="slds-p-around_small">
+                
+            <div class="slds-text-align_center slds-container_center" >
+                <div class="slds-size_2-of-3 slds-align_absolute-center slds-p-bottom_small">
+                    <c-lwc-lookup-component
+                            name="fromUser"
+                            field-label="Old User"
+                            child-object-api-name="MassUpdate__c"
+                            target-field-api-name="Owner__c"
+                            value={fromOwnerId}
+                            required="true"
+                            add-to-recent="true"
+                            onvalueselected={handleSelectedLookupFrom}
+                    >
+                    </c-lwc-lookup-component>
+                </div>
+            </div>
+
+            <div class="slds-text-align_center slds-container_center" >
+                <div if:false={transferToInactiveUser} class="slds-size_2-of-3 slds-align_absolute-center slds-p-bottom_small"> 
+                    <c-lwc-lookup-component
+                            name="toUser"
+                            field-label="New User"
+                            child-object-api-name="MassUpdate__c"
+                            target-field-api-name="Owner__c"
+                            value={toOwnerId}
+                            required="true"
+                            add-to-recent="true"
+                            onvalueselected={handleSelectedLookupTo}
+                    >
+                    </c-lwc-lookup-component>
+                </div>
+                <div class="slds-text-align_center slds-container_center" >
+                    <div class="slds-size_2-of-3 slds-align_absolute-center slds-p-bottom_small">
+                        <lightning-input class="slds-p-left_xx-large" type="checkbox" label={inactiveOwnerName} onchange={handleCheckboxChange}></lightning-input>
+                    </div>
+                </div>
+
+            </div>
+       </div>
+    </lightning-card>
+
+    <div if:true={canTransfer}>
+    <lightning-card title = "Records owned by old and new user" icon-name = "standard:custom_notification">
+        
+        <div class="slds-p-around_small">
+            <div class="slds-text-align_center slds-container_center" >
+                    <table style="width: 200px;" class="slds-text-align_center slds-container_center slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th>Object</th><th>Old User</th><th>New User</th><th>Do the transfer</th>
+                            </tr>
+                            </thead>
+                        <tbody>
+                            <tr class="slds-hint-parent">
+                                <td>The number of <strong>Accounts</strong></td><td>{AccCnt}</td><td>{AccCntTo}</td>
+                                <td>
+                                    <lightning-input class="slds-p-left_xx-large" data-id="transferAcc" type="checkbox" checked=true></lightning-input>
+                                </td>
+                            </tr>
+                            <tr class="slds-hint-parent">
+                                <td>The number of <strong>Open opportunities</strong></td><td>{OppCnt}</td><td>{OppCntTo}</td>
+                                <td>
+                                    <lightning-input class="slds-p-left_xx-large" data-id="transferOpp" type="checkbox" checked=true></lightning-input>
+                                </td>
+                            </tr>
+                            <tr class="slds-hint-parent">
+                                <td>The number of <strong>Contacts</strong></td><td>{ConCnt}</td><td>{ConCntTo}</td>
+                                <td>
+                                    <lightning-input class="slds-p-left_xx-large" data-id="transferCon" type="checkbox" checked=true></lightning-input>
+                                </td>
+                            </tr>
+                            <tr class="slds-hint-parent">
+                            <td>The number of <strong>Open Tasks</strong></td><td>{TaskCnt}</td><td>{TaskCntTo}</td>
+                            <td>
+                                <lightning-input class="slds-p-left_xx-large" data-id="transferTask" type="checkbox" checked=true></lightning-input>
+                            </td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td>The number of <strong>Open Leads</strong></td><td>{LeadCnt}</td><td>{LeadCntTo}</td>
+                            <td>
+                                <lightning-input class="slds-p-left_xx-large" data-id="transferLead" type="checkbox" checked=true></lightning-input>
+                            </td>
+                        </tr>
+                    </tbody></table>
+                    <div class="slds-p-around_small">
+                        <lightning-button label="Transfer" onclick={transferOnClick}> </lightning-button>  
+                    </div>
+            </div>
+        </div>
+        
+     </lightning-card>
+    </div>
+
+    <div if:true={transferInProgressFlag}>
+        <lightning-card title = "Please wait.." icon-name = "standard:custom_notification">
+            
+            <div class="slds-notify slds-notify_alert" role="alert">The transfer is in progress, this will take a moment. In the meantime you can start another transfer.</div>
+    
+            <div class="slds-p-around_small">
+                <div class="slds-text-align_center slds-container_center" >
+                        <table style="width: 200px;" class="slds-text-align_center slds-container_center slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th>In Progress</th><th>Errors</th>
+                                </tr>
+                                </thead>
+                            <tbody>
+                            <tr class="slds-hint-parent">
+                                <td>{inProgress}</td><td>{inError}</td>
+                            </tr>
+                        </tbody></table>
+                </div>
+            </div>
+            
+         </lightning-card>
+    </div>
+
+    <div if:true={inErrorFlag}>
+        <lightning-card title = "Issues" icon-name = "standard:custom_notification">
+            
+            <div class="slds-notify slds-notify_alert" role="alert">Some records cannot be trasfered due to issues</div>
+    
+            <div class="slds-p-around_small">
+                <div class="slds-text-align_center slds-container_center" >
+
+                    <template if:true = {recordsInError}>  
+                        <div style="height: 300px;">  
+                            <lightning-datatable key-field="Id"  
+                                                 data={recordsInError}  
+                                                 columns={columns}>  
+                                                 hide-checkbox-column="true"  
+                                                </lightning-datatable> 
+                        </div>                   
+                    </template>  
+                    <div class="slds-p-around_small">
+                        <lightning-button label="Try update again" onclick={runBatchClick}> </lightning-button>  
+                    </div>
+                </div>
+            </div>
+            
+         </lightning-card>
+    </div>
+
+</template>
